@@ -1,0 +1,53 @@
+* Comint Intercept
+
+** Why
+
+Intercept the input in comint-mode.  This can be used to run eshell
+command, or run some command in a terminal buffer from the command
+line in shell buffer.  That is, this is to combine the best part of
+shell, eshell and term mode.  For example, you can run eshell `grep'
+in the shell buffer, or when you run `top' in the shell buffer, a
+terminal buffer is poped to run it.  SSH is supported to run command
+remotely.
+
+** Install
+
+Download the comint-intercept.el, add its path into Emacs load path,
+and load the file.  For example, add
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "<directory of comint-intercept.el>")
+(require 'comint-intercept)
+#+END_SRC
+
+in your Emacs init file.
+
+** Usage
+
+A minor mode named ~comint-intercept-mode~ is defined.  To toggle it
+in a shell buffer or some other comint mode buffer, you can run
+command ~comint-intercept-mode~.  Or you can enable
+~comint-intercept-mode~ automatically when you create a new shell mode
+buffer via,
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'shell-mode-hook 'comint-intercept-mode)
+#+END_SRC
+
+Then you can run eshell command via
+
+#+BEGIN_SRC shell
+$ e <eshell command>
+#+END_SRC
+
+Or run some eshell command directly via customizing
+~comint-intercept-eshell-commands~.
+
+To run command in term mode, you can use
+
+#+BEGIN_SRC shell
+$ t <command> <args>...
+#+END_SRC
+
+Or run commands in term mode directly via customizing
+~comint-intercept-term-commands~.
