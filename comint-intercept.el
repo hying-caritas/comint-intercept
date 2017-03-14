@@ -44,6 +44,7 @@
 (require 'cl-extra)
 (require 'comint)
 (require 'eshell)
+(require 'tramp)
 
 (defvar-local comint-intercept--origin-sender nil)
 (defvar-local comint-intercept--last-prompt nil)
