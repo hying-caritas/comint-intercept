@@ -182,6 +182,7 @@
     (remove-hook 'comint-input-filter-functions
 		 'comint-intercept--save-last-prompt t))))
 
+;;;###autoload
 (define-minor-mode comint-intercept-mode
   nil
   :lighter " CI"
