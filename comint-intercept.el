@@ -90,7 +90,7 @@
   :group 'comint-intercept
   :type 'string)
 
-(cl-defun comint-intercept--save-last-prompt (str)
+(cl-defun comint-intercept--save-last-prompt (_str)
   (setf comint-intercept--last-prompt comint-last-prompt))
 
 (cl-defun comint-intercept--check-prompt ()
