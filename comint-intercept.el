@@ -41,7 +41,6 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'cl-extra)
 (require 'comint)
 (require 'eshell)
 (require 'term)
