@@ -51,3 +51,10 @@ $ t <command> <args>...
 
 Or run commands in term mode directly via customizing
 ~comint-intercept-term-commands~.
+
+If you want something more general, you can customize
+~comint-intercept-pattern-actions~, which is an alist maps input
+pattern (regexp) to action to take (function).  The input string will
+be fed to the action function.  Then you can process the input string
+via ~eshell-command~ or ~comint-intercept-term-command~ provided by
+the package.
