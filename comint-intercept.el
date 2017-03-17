@@ -5,8 +5,8 @@
 ;; Author: "Huang, Ying" <huang.ying.caritas@gmail.com>
 ;; Maintainer: "Huang, Ying" <huang.ying.caritas@gmail.com>
 ;; URL: https://github.com/hying-caritas/comint-intercept
-;; Version: 20170314
-;; Package-Version: 20170314
+;; Version: 20170317
+;; Package-Version: 20170317
 ;; Package-Type: simple
 ;; Keywords: processes, terminals
 ;; Package-Requires: ((emacs "24.3"))
