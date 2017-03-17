@@ -183,7 +183,7 @@
 
 ;;;###autoload
 (define-minor-mode comint-intercept-mode
-  nil
+  "Intercept comint input and send it to other buffers or run some functions."
   :lighter " CI"
   :group comint-intercept
   (comint-intercept--enable comint-intercept-mode))
