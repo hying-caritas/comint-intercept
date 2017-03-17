@@ -54,7 +54,7 @@
   :group 'tools
   :link '(url-link :tag "Github" "https://github.com/hying-caritas/comint-intercept"))
 
-(defcustom comint-intercept-eshell-prefix "^e[[:space:]]"
+(defcustom comint-intercept-eshell-prefix "e"
   "Prefix to run the remaining of the line as an eshell command."
   :group 'comint-intercept
   :type 'string)
@@ -68,7 +68,7 @@
   :group 'comint-intercept
   :type '(repeat string))
 
-(defcustom comint-intercept-term-prefix "^t[[:space:]]"
+(defcustom comint-intercept-term-prefix "t"
   "Prefix to run the remaining of the line in a terminal buffer."
   :group 'comint-intercept
   :type '(repeat string))
@@ -102,6 +102,9 @@
 (cl-defun comint-intercept--commands-pattern (commands)
   (concat "^" (regexp-opt commands) "\\(?:;\\|[[:space:]]\\|$\\)"))
 
+(cl-defun comint-intercept--prefix-pattern (prefix)
+  (concat "^" (regexp-quote prefix) "[[:space:]]"))
+
 (cl-defmacro comint-intercept--memorizeq1 (func base-func)
   (let ((param (cl-gensym))
 	(saved-param (cl-gensym))
@@ -119,6 +122,12 @@
 
 (comint-intercept--memorizeq1 comint-intercept--term-commands-pattern
 			      comint-intercept--commands-pattern)
+
+(comint-intercept--memorizeq1 comint-intercept--eshell-prefix-pattern
+			      comint-intercept--prefix-pattern)
+
+(comint-intercept--memorizeq1 comint-intercept--term-prefix-pattern
+			      comint-intercept--prefix-pattern)
 
 (cl-defun comint-intercept--term-command (cmdline)
   (let* ((qcmdline (shell-quote-argument cmdline))
@@ -146,8 +155,12 @@
 	 (and (comint-intercept--check-prompt)
 	      (save-excursion
 		(cond
-		 ((string-match comint-intercept-eshell-prefix str)
-		  (eshell-command (substring str 2))
+		 ((string-match
+		   (comint-intercept--eshell-prefix-pattern
+		    comint-intercept-eshell-prefix)
+		   str)
+		  (eshell-command
+		   (substring str (1+ (length comint-intercept-eshell-prefix))))
 		  t)
 		 ((string-match
 		   (comint-intercept--eshell-commands-pattern
@@ -155,8 +168,12 @@
 		   str)
 		  (eshell-command str)
 		  t)
-		 ((string-match comint-intercept-term-prefix str)
-		  (comint-intercept--term-command (substring str 2))
+		 ((string-match
+		   (comint-intercept--term-prefix-pattern
+		    comint-intercept-term-prefix)
+		   str)
+		  (comint-intercept--term-command
+		   (substring str (1+ (length comint-intercept-term-prefix))))
 		  t)
 		 ((string-match
 		   (comint-intercept--term-commands-pattern
