@@ -79,6 +79,14 @@
   :group 'comint-intercept
   :type '(repeat string))
 
+(defcustom comint-intercept-pattern-actions nil
+  "Alist maps input pattern (regexp) to action to take (function).
+
+The input string will be fed to the action function."
+  :group 'comint-intercept
+  :type '(alist :key-type (string :tag "Pattern")
+		:value-type (function :tag "Action")))
+
 (defcustom comint-intercept-term-runner "bash -c"
   "Command line to run the line in the terminal buffer."
   :group 'comint-intercept
@@ -129,7 +137,8 @@
 (comint-intercept--memorizeq1 comint-intercept--term-prefix-pattern
 			      comint-intercept--prefix-pattern)
 
-(cl-defun comint-intercept--term-command (cmdline)
+(cl-defun comint-intercept-term-command (cmdline)
+  "Run `cmdline' in a new created terminal buffer"
   (let* ((qcmdline (shell-quote-argument cmdline))
 	 (full-cmdline
 	  (if (file-remote-p default-directory)
@@ -172,15 +181,21 @@
 		   (comint-intercept--term-prefix-pattern
 		    comint-intercept-term-prefix)
 		   str)
-		  (comint-intercept--term-command
+		  (comint-intercept-term-command
 		   (substring str (1+ (length comint-intercept-term-prefix))))
 		  t)
 		 ((string-match
 		   (comint-intercept--term-commands-pattern
 		    comint-intercept-term-commands)
 		   str)
-		  (comint-intercept--term-command str)
-		  t))))))
+		  (comint-intercept-term-command str)
+		  t)
+		 ((cl-loop
+		   for (pat . action) in comint-intercept-pattern-actions
+		   when (string-match pat str)
+		   do (progn
+			(funcall action str)
+			(return t)))))))))
     (funcall comint-intercept--origin-sender proc
 	     (if not-origin "" str))))
 
