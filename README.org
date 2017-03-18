@@ -12,8 +12,11 @@ remotely.
 
 ** Install
 
-Download the comint-intercept.el, add its path into Emacs load path,
-and load the file.  For example, add
+The preferred install method is through package manager: package.el.
+comint-intercept is available in [[http://melpa.org/][MELPA]] package repository.
+
+Or you can download the comint-intercept.el, add its path into Emacs
+load path, and load the file.  For example, add
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path "<directory of comint-intercept.el>")
