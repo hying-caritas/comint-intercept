@@ -194,8 +194,7 @@ The input string will be fed to the action function."
 		   for (pat . action) in comint-intercept-pattern-actions
 		   when (string-match pat str)
 		   do (progn
-			(funcall action str)
-			(return t)))))))))
+			(funcall action str)))))))))
     (funcall comint-intercept--origin-sender proc
 	     (if not-origin "" str))))
 
