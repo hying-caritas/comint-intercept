@@ -44,6 +44,7 @@
 (require 'comint)
 (require 'eshell)
 (require 'term)
+(require 'vterm)
 (require 'tramp)
 
 (defvar-local comint-intercept--origin-sender nil)
@@ -70,6 +71,11 @@
 
 (defcustom comint-intercept-term-prefix "t"
   "Prefix to run the remaining of the line in a terminal buffer."
+  :group 'comint-intercept
+  :type '(repeat string))
+
+(defcustom comint-intercept-vterm-prefix "v"
+  "Prefix to run the remaining of the line in a vterm buffer."
   :group 'comint-intercept
   :type '(repeat string))
 
@@ -137,6 +143,9 @@ The input string will be fed to the action function."
 (comint-intercept--memorizeq1 comint-intercept--term-prefix-pattern
 			      comint-intercept--prefix-pattern)
 
+(comint-intercept--memorizeq1 comint-intercept--vterm-prefix-pattern
+			      comint-intercept--prefix-pattern)
+
 (cl-defun comint-intercept-term-command (cmdline)
   "Run `cmdline' in a new created terminal buffer"
   (let* ((qcmdline (shell-quote-argument cmdline))
@@ -158,6 +167,28 @@ The input string will be fed to the action function."
 		    qcmdline))))
     (ansi-term "/bin/sh" (car (split-string cmdline)))
     (term-send-raw-string (format "exec %s\n" full-cmdline))))
+
+(cl-defun comint-intercept-vterm-command (cmdline)
+  "Run `cmdline' in a new created vterm buffer"
+  (let* ((qcmdline (shell-quote-argument cmdline))
+	 (full-cmdline
+	  (if (file-remote-p default-directory)
+	      (with-parsed-tramp-file-name default-directory tgt
+		(format "ssh -t %s %s %s%s"
+			(if tgt-user
+			    (format "%s@%s" tgt-user tgt-host)
+			  tgt-host)
+			comint-intercept-term-runner
+			;; Double quote because this
+			;; will be interpreted twice
+			(shell-quote-argument
+			 (shell-quote-argument
+			  (format "cd %s;" tgt-localname)))
+			(shell-quote-argument qcmdline)))
+	    (format "%s %s" comint-intercept-term-runner
+		    qcmdline))))
+    (vterm (car (split-string cmdline)))
+    (vterm-send-string (format "exec %s\n" full-cmdline))))
 
 (cl-defun comint-intercept--send-input (proc str)
   (let ((not-origin
@@ -190,6 +221,14 @@ The input string will be fed to the action function."
 		   str)
 		  (comint-intercept-term-command str)
 		  t)
+		 ((string-match
+		   (comint-intercept--vterm-prefix-pattern
+		    comint-intercept-vterm-prefix)
+		   str)
+		  (comint-intercept-vterm-command
+		   (substring str (1+ (length comint-intercept-term-prefix))))
+		  t)
+
 		 ((cl-loop
 		   for (pat . action) in comint-intercept-pattern-actions
 		   when (string-match pat str)
