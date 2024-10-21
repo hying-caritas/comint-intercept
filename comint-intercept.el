@@ -9,7 +9,7 @@
 ;; Package-Version: 20170317
 ;; Package-Type: simple
 ;; Keywords: processes, terminals
-;; Package-Requires: ((emacs "24.3"))
+;; Package-Requires: ((emacs "24.3") (vterm "20240102.1640"))
 
 ;; This file is NOT part of GNU Emacs.
 
